@@ -29,7 +29,6 @@ const createPatient = async (req, res) => {
 const getAllPatients = async (req, res) => {
   try {
     const { phone, name } = req.query;
-    console.log(phone, name);
     const where = {};
 
     if (phone) where.phone = { [Op.like]: `%${phone}%` };

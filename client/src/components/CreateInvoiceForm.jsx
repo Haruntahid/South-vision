@@ -1,5 +1,4 @@
-// CreateInvoiceForm.jsx
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 import CreateInvoiceStepper from "../components/CreateInvoiceStepper";
@@ -16,6 +15,12 @@ function CreateInvoiceForm() {
   const [loadingTests, setLoadingTests] = useState(false);
   const [patientFound, setPatientFound] = useState(false);
   const [patientId, setPatientId] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [invoiceCreated, setInvoiceCreated] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
+  const [createInvoiceClicked, setCreateInvoiceClicked] = useState(false);
+
+  const invoiceRef = useRef(); // for future use with print/download
 
   const axiosPublic = useAxiosPublic();
 
@@ -27,6 +32,7 @@ function CreateInvoiceForm() {
     control,
     formState: { errors },
     trigger,
+    reset,
   } = useForm({
     defaultValues: {
       phone: "",
@@ -76,10 +82,13 @@ function CreateInvoiceForm() {
   };
 
   const onSubmit = async (data) => {
-    let currentPatientId = patientId;
+    if (!createInvoiceClicked || submitting || invoiceCreated) return;
+    setSubmitting(true);
 
     try {
-      // If patient not found, create one
+      let currentPatientId = patientId;
+
+      // Create patient if not found
       if (!currentPatientId) {
         const res = await axiosPublic.post("/api/v1/patient", {
           phone: data.phone,
@@ -105,13 +114,32 @@ function CreateInvoiceForm() {
         discountValue: parseFloat(data.discountValue),
       };
 
-      await axiosPublic.post("/api/v1/invoice", payload);
-      alert("Invoice created successfully!");
-      setActiveStep(0);
+      const res = await axiosPublic.post("/api/v1/invoice", payload);
+
+      alert("✅ Invoice created successfully!");
+      setInvoiceCreated(true);
+      setInvoiceData(res.data);
     } catch (err) {
       console.error(err);
-      alert("Failed to create invoice or patient.");
+      alert("❌ Failed to create invoice or patient.");
+    } finally {
+      setSubmitting(false);
+      setCreateInvoiceClicked(false);
     }
+  };
+
+  const handleDownloadPDF = () => {
+    window.print(); // Replace with jsPDF or server-side PDF if needed
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+    setPatientFound(false);
+    setPatientId(null);
+    setInvoiceCreated(false);
+    setInvoiceData(null);
+    setCreateInvoiceClicked(false);
+    reset();
   };
 
   return (
@@ -146,6 +174,7 @@ function CreateInvoiceForm() {
           <StepSelectTests
             control={control}
             register={register}
+            watch={watch}
             errors={errors}
             tests={tests}
             setTests={setTests}
@@ -156,16 +185,19 @@ function CreateInvoiceForm() {
         )}
 
         {activeStep === 2 && (
-          <StepSummary
-            watch={watch}
-            phone={phone}
-            selectedTestIds={selectedTestIds}
-            tests={tests}
-            totalTestsPrice={totalTestsPrice}
-            discountType={discountType}
-            discountValue={discountValue}
-            finalTotal={finalTotal}
-          />
+          <div ref={invoiceRef}>
+            <StepSummary
+              watch={watch}
+              phone={phone}
+              selectedTestIds={selectedTestIds}
+              tests={tests}
+              totalTestsPrice={totalTestsPrice}
+              discountType={discountType}
+              discountValue={discountValue}
+              finalTotal={finalTotal}
+              invoiceData={invoiceData}
+            />
+          </div>
         )}
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
@@ -182,11 +214,38 @@ function CreateInvoiceForm() {
               Next
             </Button>
           ) : (
-            <Button type="submit" variant="contained" color="success">
-              Create Invoice
+            <Button
+              onClick={() => {
+                setCreateInvoiceClicked(true);
+                handleSubmit(onSubmit)();
+              }}
+              variant="contained"
+              color="success"
+              disabled={submitting || invoiceCreated}
+            >
+              {submitting
+                ? "Creating..."
+                : invoiceCreated
+                ? "Invoice Created"
+                : "Create Invoice"}
             </Button>
           )}
         </Box>
+
+        {activeStep === 2 && invoiceCreated && (
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
+            <Button
+              onClick={handleDownloadPDF}
+              variant="outlined"
+              color="primary"
+            >
+              Download PDF
+            </Button>
+            <Button onClick={handleReset} variant="outlined" color="secondary">
+              Create New Invoice
+            </Button>
+          </Box>
+        )}
       </form>
     </Box>
   );

@@ -1,4 +1,5 @@
 const Test = require("../models/Test");
+const { Op } = require("sequelize");
 
 const createTest = async (req, res) => {
   try {
@@ -56,9 +57,30 @@ const getTests = async (_req, res) => {
   }
 };
 
+const searchTest = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    const whereClause = name
+      ? {
+          name: {
+            [Op.like]: `%${name}%`,
+          },
+        }
+      : {};
+
+    const tests = await Test.findAll({ where: whereClause });
+    res.json(tests);
+  } catch (error) {
+    console.error("Error fetching tests:", error);
+    res.status(500).json({ error: "Failed to fetch tests" });
+  }
+};
+
 module.exports = {
   createTest,
   updateTest,
   getTests,
   deleteTest,
+  searchTest,
 };
