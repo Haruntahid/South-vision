@@ -6,6 +6,7 @@ import StepPatientInfo from "../components/StepPatientInfo";
 import StepSelectTests from "../components/StepSelectTests";
 import StepSummary from "../components/StepSummary";
 import { Box, Button } from "@mui/material";
+import toast from "react-hot-toast";
 
 const steps = ["Patient Info", "Select Tests", "Summary"];
 
@@ -116,7 +117,7 @@ function CreateInvoiceForm() {
 
       const res = await axiosPublic.post("/api/v1/invoice", payload);
 
-      alert("✅ Invoice created successfully!");
+      toast.success("✅ Invoice created successfully!");
       setInvoiceCreated(true);
       setInvoiceData(res.data);
     } catch (err) {
