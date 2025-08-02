@@ -28,14 +28,28 @@ const createPatient = async (req, res) => {
 // Get all or search
 const getAllPatients = async (req, res) => {
   try {
-    const { phone, name } = req.query;
-    const where = {};
+    const { phone, name, page = 1, limit = 10 } = req.query;
 
+    const where = {};
     if (phone) where.phone = { [Op.like]: `%${phone}%` };
     if (name) where.name = { [Op.like]: `%${name}%` };
 
-    const patients = await Patient.findAll({ where });
-    res.status(200).json(patients);
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const { rows: patients, count: totalPatients } =
+      await Patient.findAndCountAll({
+        where,
+        limit: parseInt(limit),
+        offset,
+        order: [["createdAt", "DESC"]],
+      });
+
+    res.status(200).json({
+      data: patients,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(totalPatients / parseInt(limit)),
+      totalPatients,
+    });
   } catch (error) {
     console.error("Error in getAllPatients:", error);
     res.status(500).json({ error: "Internal server error" });

@@ -3,6 +3,7 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import PrivateRoute from "./PrivateRoute";
+import PatientInfo from "../pages/PatientInfo";
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/patient-info",
+        element: <PatientInfo />,
       },
     ],
   },
