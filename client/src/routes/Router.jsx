@@ -6,6 +6,7 @@ import PrivateRoute from "./PrivateRoute";
 import PatientInfo from "../pages/PatientInfo";
 import Invoices from "../pages/Invoices";
 import AddTests from "../pages/AddTests";
+import Dashboard from "../pages/Dashboard";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: "/add-tests",
         element: <AddTests />,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
       },
     ],
   },

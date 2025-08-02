@@ -122,7 +122,7 @@ function CreateInvoiceForm() {
       setInvoiceData(res.data);
     } catch (err) {
       console.error(err);
-      alert("❌ Failed to create invoice or patient.");
+      toast.error("Failed to create invoice or patient.");
     } finally {
       setSubmitting(false);
       setCreateInvoiceClicked(false);

@@ -77,6 +77,10 @@ function MainLayout() {
             <RiFileAddFill size={22} />
             {!collapsed && <span>Add Tests</span>}
           </NavLink>
+          <NavLink to="/dashboard" className={linkClass}>
+            <RiFileAddFill size={22} />
+            {!collapsed && <span>Dashboard</span>}
+          </NavLink>
         </nav>
 
         {/* Logout */}
