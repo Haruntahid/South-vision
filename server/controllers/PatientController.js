@@ -25,16 +25,21 @@ const createPatient = async (req, res) => {
   }
 };
 
-// Get all or search
+// Get all and search by phone or name
 const getAllPatients = async (req, res) => {
   try {
-    const { phone, name, page = 1, limit = 10 } = req.query;
-
-    const where = {};
-    if (phone) where.phone = { [Op.like]: `%${phone}%` };
-    if (name) where.name = { [Op.like]: `%${name}%` };
+    const { search = "", page = 1, limit = 10 } = req.query;
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
+
+    const where = {};
+
+    if (search) {
+      where[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { phone: { [Op.like]: `%${search}%` } },
+      ];
+    }
 
     const { rows: patients, count: totalPatients } =
       await Patient.findAndCountAll({

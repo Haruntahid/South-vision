@@ -16,8 +16,7 @@ function PatientInfo() {
         params: {
           page,
           limit,
-          name: search,
-          phone: search,
+          search,
         },
       });
       setPatients(response.data.data);

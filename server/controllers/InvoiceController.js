@@ -67,6 +67,58 @@ const createInvoice = async (req, res) => {
   }
 };
 
+const getAllInvoices = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, invoiceNumber, patientName } = req.query;
+
+    const offset = (parseInt(page) - 1) * parseInt(limit);
+    const where = {};
+
+    // Optional filter by invoice number
+    if (invoiceNumber) {
+      where.invoiceNumber = { [Op.like]: `%${invoiceNumber}%` };
+    }
+
+    // Join with Patient for filtering by patient name
+    const include = [
+      {
+        model: Patient,
+        attributes: ["id", "name", "phone"],
+        where: patientName
+          ? { name: { [Op.like]: `%${patientName}%` } }
+          : undefined,
+      },
+      {
+        model: TestResult,
+        include: [
+          {
+            model: Test,
+            attributes: ["name", "price"],
+          },
+        ],
+      },
+    ];
+
+    const { count, rows } = await Invoice.findAndCountAll({
+      where,
+      include,
+      offset,
+      limit: parseInt(limit),
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      totalInvoices: count,
+      currentPage: parseInt(page),
+      totalPages: Math.ceil(count / limit),
+      invoices: rows,
+    });
+  } catch (error) {
+    console.error("Error in getAllInvoices:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const getInvoiceReport = async (req, res) => {
   try {
     const [data] = await sequelize.query(`
@@ -87,4 +139,4 @@ const getInvoiceReport = async (req, res) => {
   }
 };
 
-module.exports = { createInvoice, getInvoiceReport };
+module.exports = { createInvoice, getInvoiceReport, getAllInvoices };

@@ -44,11 +44,11 @@ function StepPatientInfo({
       setLoading(true);
       try {
         const res = await axiosPublic.get("/api/v1/patient", {
-          params: { phone },
+          params: { search: phone },
         });
 
-        if (res.data?.length > 0) {
-          const patient = res.data[0];
+        if (res.data?.data?.length > 0) {
+          const patient = res.data.data[0];
           setValue("name", patient.name);
           setValue("gender", patient.gender);
           setValue("age", patient.age);
