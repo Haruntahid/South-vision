@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import PrivateRoute from "./PrivateRoute";
 import PatientInfo from "../pages/PatientInfo";
+import Invoices from "../pages/Invoices";
+import AddTests from "../pages/AddTests";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +23,14 @@ export const router = createBrowserRouter([
       {
         path: "/patient-info",
         element: <PatientInfo />,
+      },
+      {
+        path: "/invoices",
+        element: <Invoices />,
+      },
+      {
+        path: "/add-tests",
+        element: <AddTests />,
       },
     ],
   },

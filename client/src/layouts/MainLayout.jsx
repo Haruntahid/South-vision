@@ -23,7 +23,7 @@ function MainLayout() {
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-2 rounded-lg transition-colors duration-200 ${
-      isActive ? "bg-green-700 text-white" : "text-green-100 hover:bg-green-600"
+      isActive ? "bg-black text-white" : "text-green-100 hover:bg-[#0a0a0a]"
     } ${collapsed ? "justify-center" : ""}`;
 
   return (
@@ -32,7 +32,7 @@ function MainLayout() {
       <aside
         className={`${
           collapsed ? "w-20" : "w-64"
-        } bg-green-500 text-white transition-all duration-300 fixed inset-y-0 left-0 z-30 lg:translate-x-0 ${
+        } bg-[#1CAC78] text-white transition-all duration-300 fixed inset-y-0 left-0 z-30 lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:flex flex-col shadow-xl overflow-y-auto`}
       >
@@ -69,9 +69,13 @@ function MainLayout() {
             <FaFilePrescription size={22} />
             {!collapsed && <span>Patient Information</span>}
           </NavLink>
-          <NavLink to="/create-prescription" className={linkClass}>
+          <NavLink to="/invoices" className={linkClass}>
             <RiFileAddFill size={22} />
-            {!collapsed && <span>Create Prescription</span>}
+            {!collapsed && <span>Invoices</span>}
+          </NavLink>
+          <NavLink to="/add-tests" className={linkClass}>
+            <RiFileAddFill size={22} />
+            {!collapsed && <span>Add Tests</span>}
           </NavLink>
         </nav>
 

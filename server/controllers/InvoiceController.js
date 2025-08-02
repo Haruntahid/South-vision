@@ -1,4 +1,5 @@
 const { Invoice, TestResult, Test, Patient, sequelize } = require("../index");
+const { Op } = require("sequelize");
 
 const createInvoice = async (req, res) => {
   try {
@@ -139,4 +140,25 @@ const getInvoiceReport = async (req, res) => {
   }
 };
 
-module.exports = { createInvoice, getInvoiceReport, getAllInvoices };
+const getPatientGenderRatio = async (req, res) => {
+  try {
+    const [data] = await sequelize.query(`
+      SELECT 
+        SUM(CASE WHEN gender = 'male' THEN 1 ELSE 0 END) AS male,
+        SUM(CASE WHEN gender = 'female' THEN 1 ELSE 0 END) AS female
+      FROM Patients
+    `);
+
+    res.json(data[0]);
+  } catch (error) {
+    console.error("Error in getPatientGenderRatio:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = {
+  createInvoice,
+  getInvoiceReport,
+  getAllInvoices,
+  getPatientGenderRatio,
+};
