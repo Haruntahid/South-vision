@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
+import { AuthContext } from "../provider/AuthProvider";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -9,6 +10,7 @@ function Login() {
 
   const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,8 +23,8 @@ function Login() {
       });
 
       const token = res.data.token;
-      localStorage.setItem("token", token);
-      navigate("/dashboard"); // or wherever you want
+      login(token);
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || "Login failed");
@@ -70,13 +72,6 @@ function Login() {
             Sign In
           </button>
         </form>
-
-        <p className="mt-4 text-sm text-center text-gray-500">
-          Don't have an account?{" "}
-          <span className="text-green-600 hover:underline cursor-pointer">
-            Register
-          </span>
-        </p>
       </div>
     </div>
   );
