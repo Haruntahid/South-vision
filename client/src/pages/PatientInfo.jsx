@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAxiosPublic from "../hooks/useAxiosPublic";
 
 function PatientInfo() {
   const axiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
 
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState("");
@@ -43,6 +45,10 @@ function PatientInfo() {
     if (page < totalPages) setPage((prev) => prev + 1);
   };
 
+  const handleRowClick = (id) => {
+    navigate(`/patient/${id}`);
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">
@@ -71,7 +77,11 @@ function PatientInfo() {
             </thead>
             <tbody>
               {patients.map((patient, index) => (
-                <tr key={patient.id} className="border-t">
+                <tr
+                  key={patient.id}
+                  className="border-t hover:bg-gray-50 cursor-pointer"
+                  onClick={() => handleRowClick(patient.id)}
+                >
                   <td className="px-4 py-2">
                     {(page - 1) * limit + index + 1}
                   </td>
