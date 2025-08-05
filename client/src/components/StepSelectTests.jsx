@@ -12,6 +12,7 @@ function StepSelectTests({
   loadingTests,
   setLoadingTests,
   axiosPublic,
+  trigger,
 }) {
   const [search, setSearch] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -20,7 +21,23 @@ function StepSelectTests({
   const discountType = watch("discountType");
   const discountValue = Number(watch("discountValue")) || 0;
 
-  // Fetch tests on component mount only
+  const selectedTests = watch("tests")
+    .map((id) => tests.find((t) => t.id === id))
+    .filter(Boolean);
+
+  const netAmount = selectedTests.reduce(
+    (sum, test) => sum + Number(test?.price || 0),
+    0
+  );
+
+  const discountAmount =
+    discountType === "percent"
+      ? (netAmount * discountValue) / 100
+      : Math.min(discountValue, netAmount);
+
+  const total = netAmount - discountAmount;
+
+  // Fetch tests on component mount
   useEffect(() => {
     const fetchTests = async () => {
       setLoadingTests(true);
@@ -52,6 +69,11 @@ function StepSelectTests({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Re-validate discountValue when selectedTests or discountType changes
+  useEffect(() => {
+    trigger("discountValue");
+  }, [watch("tests"), watch("discountType"), watch("discountValue"), trigger]);
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-center text-2xl font-bold text-gray-800 mb-6">
@@ -75,18 +97,6 @@ function StepSelectTests({
               field.onChange([...field.value, id]);
             }
           };
-
-          const netAmount = selectedTests.reduce(
-            (sum, test) => sum + Number(test?.price || 0),
-            0
-          );
-
-          const discountAmount =
-            discountType === "percent"
-              ? (netAmount * discountValue) / 100
-              : Math.min(discountValue, netAmount);
-
-          const total = netAmount - discountAmount;
 
           return (
             <>
@@ -207,8 +217,20 @@ function StepSelectTests({
                   }`}
                   {...register("discountValue", {
                     min: { value: 0, message: "Can't be negative" },
-                    validate: (v) =>
-                      v === "" || !isNaN(v) || "Must be a number",
+                    validate: (value) => {
+                      const val = Number(value);
+                      if (isNaN(val)) return "Must be a number";
+
+                      if (discountType === "percent" && val > 100) {
+                        return "Percentage can't exceed 100%";
+                      }
+
+                      if (discountType === "amount" && val > netAmount) {
+                        return "Fixed discount can't exceed total amount";
+                      }
+
+                      return true;
+                    },
                   })}
                 />
                 {errors.discountValue && (

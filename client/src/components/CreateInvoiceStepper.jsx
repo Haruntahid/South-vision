@@ -1,6 +1,6 @@
 import { Stepper, Step, StepLabel } from "@mui/material";
 
-const steps = ["Patient Info", "Select Tests", "Summary"];
+const steps = ["Patient Information", "Select Tests", "Summary"];
 
 function CreateInvoiceStepper({ activeStep }) {
   return (

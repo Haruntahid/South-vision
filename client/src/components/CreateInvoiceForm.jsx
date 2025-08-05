@@ -31,10 +31,11 @@ function CreateInvoiceForm() {
     watch,
     setValue,
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     trigger,
     reset,
   } = useForm({
+    mode: "onChange",
     defaultValues: {
       phone: "",
       name: "",
@@ -117,7 +118,7 @@ function CreateInvoiceForm() {
 
       const res = await axiosPublic.post("/api/v1/invoice", payload);
 
-      toast.success("✅ Invoice created successfully!");
+      toast.success("Invoice created successfully!");
       setInvoiceCreated(true);
       setInvoiceData(res.data);
     } catch (err) {
@@ -149,9 +150,9 @@ function CreateInvoiceForm() {
         maxWidth: 600,
         margin: "auto",
         bgcolor: "background.paper",
-        p: 3,
+        // p: 3,
         borderRadius: 2,
-        boxShadow: 3,
+        // boxShadow: 3,
       }}
     >
       <CreateInvoiceStepper activeStep={activeStep} />
@@ -176,6 +177,7 @@ function CreateInvoiceForm() {
             control={control}
             register={register}
             watch={watch}
+            trigger={trigger}
             errors={errors}
             tests={tests}
             setTests={setTests}
@@ -211,7 +213,12 @@ function CreateInvoiceForm() {
           </Button>
 
           {activeStep < steps.length - 1 ? (
-            <Button onClick={handleNext} variant="contained" color="primary">
+            <Button
+              onClick={handleNext}
+              variant="contained"
+              color="primary"
+              disabled={!isValid}
+            >
               Next
             </Button>
           ) : (

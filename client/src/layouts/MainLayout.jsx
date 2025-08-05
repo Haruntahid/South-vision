@@ -32,7 +32,7 @@ function MainLayout() {
       <aside
         className={`${
           collapsed ? "w-20" : "w-64"
-        } bg-[#1CAC78] text-white transition-all duration-300 fixed inset-y-0 left-0 z-30 lg:translate-x-0 ${
+        } bg-[#1CAC78] text-white transition-all duration-300 fixed inset-y-0 left-0 z-30 lg:translate-x-0  ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:flex flex-col shadow-xl overflow-y-auto`}
       >
