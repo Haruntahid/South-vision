@@ -49,10 +49,10 @@ function StepPatientInfo({
 
         if (res.data?.data?.length > 0) {
           const patient = res.data.data[0];
-          setValue("name", patient.name);
-          setValue("gender", patient.gender);
-          setValue("age", patient.age);
-          setValue("address", patient.address);
+          setValue("name", patient.name, { shouldValidate: true });
+          setValue("gender", patient.gender, { shouldValidate: true });
+          setValue("age", patient.age, { shouldValidate: true });
+          setValue("address", patient.address, { shouldValidate: true });
           setPatientFound(true);
           setPatientId(patient.id);
         } else {

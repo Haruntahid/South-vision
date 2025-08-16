@@ -32,11 +32,23 @@ const createInvoice = async (req, res) => {
       0
     );
 
-    // Apply discount
+    // Validate discount value
     let discount = 0;
     if (discountType === "percent") {
+      if (parseFloat(discountValue) > 100) {
+        return res
+          .status(400)
+          .json({ error: "Percentage discount cannot be more than 100%" });
+      }
       discount = (parseFloat(discountValue) / 100) * totalAmount;
     } else if (discountType === "amount") {
+      if (parseFloat(discountValue) > totalAmount) {
+        return res
+          .status(400)
+          .json({
+            error: "Discount amount cannot be greater than total amount",
+          });
+      }
       discount = parseFloat(discountValue);
     }
 

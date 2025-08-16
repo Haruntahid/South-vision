@@ -76,10 +76,6 @@ function StepSelectTests({
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-center text-2xl font-bold text-gray-800 mb-6">
-        Select Tests
-      </h2>
-
       {/* Custom Multi-Select Dropdown */}
       <Controller
         name="tests"
